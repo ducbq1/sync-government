@@ -1,0 +1,8 @@
+src/main/resources/templates/landrick/dist
+src/main/resources/static/assets
+.idea
+src/main/resources/templates/landrick/node_modules
+target
+logs/
+chinook.sqlite
+.git_viettel

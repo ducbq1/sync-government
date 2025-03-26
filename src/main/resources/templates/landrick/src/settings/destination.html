@@ -1,0 +1,390 @@
+@@include("../partials/main.html")
+
+<head>
+    @@include("../partials/title-meta.html", {"title": "Landrick"})
+    <!-- Css -->
+    <link href="/assets/libs/simplebar/simplebar.min.css" rel="stylesheet">
+    @@include("../partials/head-css.html")
+
+</head>
+
+<body>
+<!-- Loader -->
+<div id="preloader">
+    <div id="status">
+        <div class="spinner">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+        </div>
+    </div>
+</div>
+<!-- Loader -->
+
+<!-- Change status Modal -->
+<div class="modal fade" id="changeStatusModal" tabindex="-1" aria-labelledby="changeStatusModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeStatusModalLabel">Change Config Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex align-items-center justify-content-center text-center">
+                    <h5 class="fs-6">
+                        Bạn có chắc muốn thay đổi trạng thái của đích(s) này không?
+                    </h5>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary close" data-bs-dismiss="modal">
+                    Close
+                </button>
+                <button onclick="changeConfig()" type="button" class="btn btn-sm btn-success">Change</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addConfigModal" tabindex="-1" aria-labelledby="addConfigModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addConfigModalLabel">New Config</h5>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="configName" class="mb-0 fw-bold">Name</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="configName"
+                                   placeholder="Config Name..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="configDescription" class="mb-0 fw-bold">Description</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="configDescription"
+                                   placeholder="Description..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="configUrl" class="mb-0 fw-bold">URL</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="configUrl"
+                                   placeholder="URL..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="configUsername" class="mb-0 fw-bold">Username</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="configUsername"
+                                   placeholder="Username..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="configPassword" class="mb-0 fw-bold">Password</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="password" class="form-control rounded-0 border-0" id="configPassword"
+                                   placeholder="Password..." onfocus="(this.type='text')" onblur="(this.type='password')" />
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="configDriver" class="mb-0 fw-bold">Driver</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="configDriver"
+                                   placeholder="Driver..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="configPort" class="mb-0 fw-bold">Port</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="configPort"
+                                   placeholder="Port..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="configService" class="mb-0 fw-bold">Service</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="configService"
+                                   placeholder="Service..."/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="clearModal()" type="button" class="btn btn-secondary close"
+                            data-bs-dismiss="modal">Close
+                    </button>
+                    <button onclick="saveOrUpdateConfig(1)" type="button" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editConfigModal" tabindex="-1" aria-labelledby="editConfigModalLabel"
+     aria-hidden="true">
+    <input type="hidden" value="" id="configId"/>
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editConfigModalLabel">Edit Config</h5>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="newConfigName" class="mb-0 fw-bold">Name</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="newConfigName"
+                                   placeholder="Config Name..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="newConfigDescription" class="mb-0 fw-bold">Description</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="newConfigDescription"
+                                   placeholder="Description..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="newConfigUrl" class="mb-0 fw-bold">URL</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="newConfigUrl"
+                                   placeholder="URL..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="newConfigUsername" class="mb-0 fw-bold">Username</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="newConfigUsername"
+                                   placeholder="Username..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="newConfigPassword" class="mb-0 fw-bold">Password</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="password" class="form-control rounded-0 border-0" id="newConfigPassword"
+                                   placeholder="Password..." onfocus="(this.type='text')" onblur="(this.type='password')" />
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="newConfigDriver" class="mb-0 fw-bold">Driver</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="newConfigDriver"
+                                   placeholder="Driver..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="newConfigPort" class="mb-0 fw-bold">Port</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="newConfigPort"
+                                   placeholder="Port..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="newConfigService" class="mb-0 fw-bold">Service</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="newConfigService"
+                                   placeholder="Service..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto">
+                        <div class="col-md-2 d-flex border flex-column justify-content-center bg-light py-1">
+                            <label for="configIsActivated" class="mb-0 fw-bold">Activate</label>
+                        </div>
+                        <div class="col-md-10 p-0">
+                            <div class="ms-3 form-check form-switch d-flex align-items-center h-100 mb-0">
+                                <input class="form-check-input" type="checkbox" id="configIsActivated" checked>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary close"
+                            data-bs-dismiss="modal">Close
+                    </button>
+                    <button onclick="saveOrUpdateConfig(2)" type="button" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="page-wrapper toggled">
+    @@include("../partials/sidebar-dark.html")
+
+    <!-- Start Page Content -->
+    <main class="page-content bg-light">
+        @@include("../partials/top-header.html")
+        <div id="type-container" class="visually-hidden" th:attr="data-type=${type}"></div>
+        <div class="container-fluid">
+            <div class="layout-specing">
+                <div class="d-md-flex justify-content-start align-items-center mb-4">
+                    <nav aria-label="breadcrumb" class="d-inline-block">
+                        <ul class="breadcrumb bg-transparent rounded mb-0 p-0">
+                            <li th:class="'breadcrumb-item text-capitalize '+${breadcrumb.isActive ? 'active' : ''}"
+                                th:each="breadcrumb : ${breadcrumbs}"><a th:href="@{${breadcrumb.url}}">[[${breadcrumb.label}]]</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <div class="d-md-flex justify-content-between align-items-center mb-4">
+                    <select id="selectPageSize" class="form-select w-auto" aria-label="Chọn số lượng bản ghi mỗi trang"
+                            onchange="changePageSize(this)">
+                        <option value="5">5 bản ghi mỗi trang</option>
+                        <option value="10" selected>10 bản ghi mỗi trang</option>
+                        <option value="20">20 bản ghi mỗi trang</option>
+                        <option value="50">50 bản ghi mỗi trang</option>
+                    </select>
+                    <h5 class="mb-0">[[${title}]]</h5>
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input d-none" type="checkbox" data-bs-toggle="modal"
+                                   data-bs-target="#changeStatusModal" id="multipleConfigActivate" aria-label="multipleConfigActivate">
+                        </div>
+                        <button type="button" class="btn btn-icon btn-pills btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#addConfigModal">
+                            <i data-feather="plus" class="fea icon-sm"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Advanced Search -->
+                <div class="accordion mb-4 accordion-flush" id="advancedSearch">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="searchHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <span class="d-inline-block ms-2">Tìm kiếm nâng cao</span>
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="searchHeading"
+                             data-bs-parent="#advancedSearch">
+                            <div class="accordion-body">
+                                <form>
+                                    <div class="row mb-3 m-auto bg-light border">
+                                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                                            <label for="searchConfigName" class="mb-0 fw-bold">Name</label>
+                                        </div>
+                                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                                            <input type="text" class="form-control rounded-0 border-0"
+                                                   id="searchConfigName"
+                                                   placeholder="Config Name..."/>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3 m-auto bg-light border">
+                                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                                            <label for="searchConfigDescription"
+                                                   class="mb-0 fw-bold">Description</label>
+                                        </div>
+                                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                                            <input type="text" class="form-control rounded-0 border-0"
+                                                   id="searchConfigDescription"
+                                                   placeholder="Description..."/>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3 m-auto bg-light border">
+                                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                                            <label for="searchConfigUrl" class="mb-0 fw-bold">URL</label>
+                                        </div>
+                                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                                            <input type="text" class="form-control rounded-0 border-0"
+                                                   id="searchConfigUrl"
+                                                   placeholder="URL..."/>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 m-auto text-end">
+                                        <button onclick="searchConfig()" type="button" class="btn btn-info">Search
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- List Category -->
+                <div class="row position-relative">
+                    <div id="preloader-table" class="position-absolute" style="visibility: hidden; opacity: 0">
+                        <div id="status-table">
+                            <div class="spinner">
+                                <div class="double-bounce1"></div>
+                                <div class="double-bounce2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="table-responsive shadow rounded">
+                            <table class="table table-center bg-white mb-0 table-hover" id="category-table">
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row text-center">
+                    <!-- PAGINATION START -->
+                    <div class="col-12 mt-4">
+                        <div class="d-md-flex align-items-center text-center justify-content-between">
+                            <span class="text-muted me-3" id="pageSize"></span>
+                            <ul id="pagination" class="pagination mb-0 justify-content-center mt-4 mt-sm-0"></ul>
+                        </div>
+                    </div><!--end col-->
+                    <!-- PAGINATION END -->
+                </div><!--end row-->
+            </div>
+        </div><!--end container-->
+
+        @@include("../partials/footer.html")
+    </main>
+    <!--End page-content" -->
+</div>
+<!-- page-wrapper -->
+
+@@include("../partials/offcanvas-right.html")
+
+<!-- javascript -->
+@@include("../partials/vendor-scripts.html")
+<script src="/assets/libs/simplebar/simplebar.min.js"></script>
+<!-- Main Js -->
+<script src="/assets/js/plugins.init.js"></script>
+<script src="/assets/js/app.js"></script>
+<script src="/assets/js/custom/setting.destination.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,358 @@
+@@include("../partials/main.html")
+
+<head>
+    @@include("../partials/title-meta.html", {"title": "Landrick"})
+    <!-- Css -->
+    <link href="/assets/libs/simplebar/simplebar.min.css" rel="stylesheet">
+    @@include("../partials/head-css.html")
+
+</head>
+
+<body>
+<!-- Loader -->
+<div id="preloader">
+    <div id="status">
+        <div class="spinner">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+        </div>
+    </div>
+</div>
+<!-- Loader -->
+
+<!-- Add Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryLabel">New Category</h5>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="categoryName" class="mb-0 fw-bold">Name</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="categoryName"
+                                   placeholder="Category Name..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="categoryType" class="mb-0 fw-bold">Type</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <select id="categoryType" class="form-select rounded-0 border-0"
+                                    style="font-size: 14px; line-height: 26px"
+                                    aria-label="Category Type" onchange="">
+                                <option value="-1" selected>Select a type...</option>
+                                <option value="SOURCE">API_IN</option>
+                                <option value="DESTINATION">API_OUT</option>
+                                <option value="VALIDATE">VALIDATE</option>
+                                <option value="FUNCTION">FUNCTION</option>
+                                <option value="TABLE">SOURCE</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="categoryContent" class="mb-0 fw-bold">Content</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="categoryContent"
+                                   placeholder="Content..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="categoryDescription" class="mb-0 fw-bold">Description</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="categoryDescription"
+                                   placeholder="Description..."/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="clearModal()" type="button" class="btn btn-secondary close"
+                            data-bs-dismiss="modal">Close
+                    </button>
+                    <button onclick="saveOrUpdateCategory(1)" type="button" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel"
+     aria-hidden="true">
+    <input type="hidden" value="" id="categoryId"/>
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="newCategoryName" class="mb-0 fw-bold">Name</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="newCategoryName"
+                                   placeholder="Category Name..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="newCategoryType" class="mb-0 fw-bold">Type</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <select id="newCategoryType" class="form-select rounded-0 border-0"
+                                    style="font-size: 14px; line-height: 26px"
+                                    aria-label="Category Type" onchange="">
+                                <option value="-1" selected>-- SELECT A TYPE --</option>
+                                <option value="API_IN">API_IN</option>
+                                <option value="API_OUT">API_OUT</option>
+                                <option value="VALIDATE">VALIDATE</option>
+                                <option value="FUNCTION">FUNCTION</option>
+                                <option value="SOURCE">SOURCE</option>
+                                <option value="DESTINATION">DESTINATION</option>
+                                <option value="TABLE">TABLE</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="newCategoryContent" class="mb-0 fw-bold">Content</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="newCategoryContent"
+                                   placeholder="Content..."/>
+                        </div>
+                    </div>
+                    <div class="row mb-3 m-auto bg-light border">
+                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                            <label for="newCategoryDescription" class="mb-0 fw-bold">Description</label>
+                        </div>
+                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                            <input type="text" class="form-control rounded-0 border-0" id="newCategoryDescription"
+                                   placeholder="Description..."/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="clearModal()" type="button" class="btn btn-secondary close"
+                            data-bs-dismiss="modal">Close
+                    </button>
+                    <button onclick="saveOrUpdateCategory(2)" type="button" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel"
+     aria-hidden="true">
+    <input type="hidden" value="" id="deleteCategoryId"/>
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCategoryModalLabel">Delete Category</h5>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex align-items-center justify-content-center text-center">
+                    <h5 class="fs-5">
+                        Bạn có chắc muốn xóa danh mục(s) này không?
+                    </h5>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="clearModal()" type="button" class="btn btn-secondary close" data-bs-dismiss="modal">
+                    Close
+                </button>
+                <button onclick="deleteCategory()" type="button" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-wrapper toggled">
+    @@include("../partials/sidebar-dark.html")
+
+    <!-- Start Page Content -->
+    <main class="page-content bg-light">
+        @@include("../partials/top-header.html")
+        <div id="type-container" class="visually-hidden" th:attr="data-type=${type}"></div>
+        <div class="container-fluid">
+            <div class="layout-specing">
+                <div class="d-md-flex justify-content-start align-items-center mb-4">
+                    <nav aria-label="breadcrumb" class="d-inline-block">
+                        <ul class="breadcrumb bg-transparent rounded mb-0 p-0">
+                            <li th:class="'breadcrumb-item text-capitalize '+${breadcrumb.isActive ? 'active' : ''}"
+                                th:each="breadcrumb : ${breadcrumbs}"><a th:href="@{${breadcrumb.url}}">[[${breadcrumb.label}]]</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <div class="d-md-flex justify-content-between align-items-center mb-4">
+                    <select id="selectPageSize" class="form-select w-auto" aria-label="Chọn số lượng bản ghi mỗi trang"
+                            onchange="changePageSize(this)">
+                        <option value="5">5 bản ghi mỗi trang</option>
+                        <option value="10" selected>10 bản ghi mỗi trang</option>
+                        <option value="20">20 bản ghi mỗi trang</option>
+                        <option value="50">50 bản ghi mỗi trang</option>
+                    </select>
+                    <h5 class="mb-0">[[${title}]]</h5>
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <button id="deleteSelectedBtn" type="button" class="btn btn-icon btn-pills btn-danger d-none"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteCategoryModal">
+                            <i data-feather="trash-2" class="fea icon-sm"></i>
+<!--                            <i class="fa-regular fa-trash-can"></i>-->
+                        </button>
+                        <button type="button" class="btn btn-icon btn-pills btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#addCategoryModal">
+                            <i data-feather="plus" class="fea icon-sm"></i>
+<!--                            <i class="fa-solid fa-circle-plus"></i>-->
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Advanced Search -->
+                <div class="accordion mb-4 accordion-flush" id="advancedSearch">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="searchHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <span class="d-inline-block ms-2">Tìm kiếm nâng cao</span>
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="searchHeading"
+                             data-bs-parent="#advancedSearch">
+                            <div class="accordion-body">
+                                <form>
+                                    <div class="row mb-3 m-auto bg-light border">
+                                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                                            <label for="searchCategoryName" class="mb-0 fw-bold">Name</label>
+                                        </div>
+                                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                                            <input type="text" class="form-control rounded-0 border-0"
+                                                   id="searchCategoryName"
+                                                   placeholder="Category Name..."/>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3 m-auto bg-light border">
+                                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                                            <label for="searchCategoryType" class="mb-0 fw-bold">Type</label>
+                                        </div>
+                                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                                            <select id="searchCategoryType"
+                                                    class="form-select rounded-0 border-0"
+                                                    style="font-size: 14px; line-height: 26px"
+                                                    aria-label="Category Type" onchange="">
+                                                <option value="-1" selected>Select a type...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3 m-auto bg-light border">
+                                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                                            <label for="searchCategoryContent" class="mb-0 fw-bold">Content</label>
+                                        </div>
+                                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                                            <input type="text" class="form-control rounded-0 border-0"
+                                                   id="searchCategoryContent"
+                                                   placeholder="Content..."/>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3 m-auto bg-light border">
+                                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                                            <label for="searchCategoryDescription"
+                                                   class="mb-0 fw-bold">Description</label>
+                                        </div>
+                                        <div class="col-md-10 ms-auto p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                                            <input type="text" class="form-control rounded-0 border-0"
+                                                   id="searchCategoryDescription"
+                                                   placeholder="Description..."/>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3 m-auto bg-light border">
+                                        <div class="col col-md-2 d-flex flex-column justify-content-center">
+                                            <label for="createDateFrom" class="mb-0 fw-bold">Create Date</label>
+                                        </div>
+                                        <div class="col col-md-5 p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                                            <input type="text" class="form-control rounded-0 border-0"
+                                                   onfocus="(this.type='date')" onblur="(this.type='text')"
+                                                   id="createDateFrom" placeholder="From Date..."/>
+                                        </div>
+                                        <div class="col col-md-5 p-0 border-start border-top-0 border-end-0 border-bottom-0">
+                                            <input type="text" class="form-control rounded-0 border-0"
+                                                   aria-label="createDateTo"
+                                                   onfocus="(this.type='date')" onblur="(this.type='text')"
+                                                   id="createDateTo" placeholder="To Date..."/>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 m-auto text-end">
+                                        <button onclick="searchCategory()" type="button" class="btn btn-info">Search
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- List Category -->
+                <div class="row position-relative">
+                    <div id="preloader-table" class="position-absolute" style="visibility: hidden; opacity: 0">
+                        <div id="status-table">
+                            <div class="spinner">
+                                <div class="double-bounce1"></div>
+                                <div class="double-bounce2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="table-responsive shadow rounded">
+                            <table class="table table-center bg-white mb-0 table-hover" id="category-table">
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row text-center">
+                    <!-- PAGINATION START -->
+                    <div class="col-12 mt-4">
+                        <div class="d-md-flex align-items-center text-center justify-content-between">
+                            <span class="text-muted me-3" id="pageSize"></span>
+                            <ul id="pagination" class="pagination mb-0 justify-content-center mt-4 mt-sm-0"></ul>
+                        </div>
+                    </div><!--end col-->
+                    <!-- PAGINATION END -->
+                </div><!--end row-->
+            </div>
+        </div><!--end container-->
+
+        @@include("../partials/footer.html")
+    </main>
+    <!--End page-content" -->
+</div>
+<!-- page-wrapper -->
+
+@@include("../partials/offcanvas-right.html")
+
+<!-- javascript -->
+@@include("../partials/vendor-scripts.html")
+<script src="/assets/libs/simplebar/simplebar.min.js"></script>
+<!-- Main Js -->
+<script src="/assets/js/plugins.init.js"></script>
+<script src="/assets/js/app.js"></script>
+<script src="/assets/js/custom/category.js"></script>
+</body>
+
+</html>

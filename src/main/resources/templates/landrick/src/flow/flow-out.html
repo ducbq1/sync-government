@@ -1,0 +1,744 @@
+@@include("../partials/main.html")
+
+<head>
+    @@include("../partials/title-meta.html", {"title": "Landrick"})
+    <!-- Css -->
+    <link href="/assets/libs/simplebar/simplebar.min.css" rel="stylesheet">
+    @@include("../partials/head-css.html")
+    <style>
+        .flowchart-example-container {
+            height: 300vh;
+            width: 300vw;
+            background: white;
+            border: 1px solid #BBB;
+            margin-bottom: 10px;
+        }
+
+        .flowchart-operator-connector-arrow {
+            top: 4px;
+        }
+
+        .flowchart-operator-connector-small-arrow {
+            top: 9px;
+        }
+
+        .flowchart-example pre {
+            display: none;
+        }
+
+        #create_operator {
+            margin-bottom: 10px;
+        }
+
+        .flowchart-example-event {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            color: #3366FF;
+        }
+
+        #last_event_example_6 {
+            display: block;
+            overflow-y: auto;
+            height: 100px;
+        }
+
+        #flowchart_data {
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            height: 140px;
+        }
+
+        h4 {
+            margin-top: 40px;
+        }
+
+        #operator_properties, #link_properties {
+            display: none;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border: 4px solid;
+            padding: 10px;
+        }
+
+        #example_9 {
+            width: 2000px;
+            height: 2000px;
+            background: white;
+        }
+
+        #chart_container {
+            width: 100%;
+            height: 80vh;
+            overflow: hidden;
+            background: repeating-linear-gradient(
+                    45deg,
+                    #eee,
+                    #eee 10px,
+                    #e5e5e5 10px,
+                    #e5e5e5 20px
+            );
+            border: 1px solid black;
+            margin-bottom: 10px;
+        }
+
+        .draggable_operator {
+            display: inline-block;
+            padding: 2px 5px 2px 5px;
+            border: 1px solid #ccc;
+            cursor: grab;
+            -webkit-touch-callout: none; /* iOS Safari */
+            -webkit-user-select: none; /* Chrome/Safari/Opera */
+            -khtml-user-select: none; /* Konqueror */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* IE/Edge */
+            user-select: none;
+            /* non-prefixed version, currently
+                                   not supported by any browser */
+        }
+
+        .draggable_operators {
+            margin-top: 10px;
+        }
+
+        .draggable_operators_label {
+            margin-bottom: 5px;
+        }
+
+        .draggable_operators_divs {
+            margin-bottom: 20px;
+        }
+
+        /*.flowchart-operator {*/
+        /*    width: unset !important;*/
+        /*}*/
+
+        .modal {
+            --bs-modal-width: 650px;
+        }
+
+    </style>
+</head>
+
+<body>
+<!-- Loader -->
+<div id="preloader">
+    <div id="status">
+        <div class="spinner">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+        </div>
+    </div>
+</div>
+<!-- Loader -->
+
+<div class="page-wrapper toggled">
+    @@include("../partials/sidebar-dark.html")
+
+    <!-- Start Page Content -->
+    <main class="page-content bg-light">
+        @@include("../partials/top-header.html")
+
+        <div class="container-fluid">
+            <div class="layout-specing">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="text-muted mb-1">Welcome back, Cristina!</h6>
+                        <h5 class="mb-0" th:text="#{title.application}"></h5>
+                    </div>
+
+                    <div class="mb-0 position-relative">
+                        <select class="form-select form-control" id="dailychart">
+                            <option selected="">This Month</option>
+                            <option value="aug">August</option>
+                            <option value="jul">July</option>
+                            <option value="jun">June</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="chart_container">
+                    <div class="flowchart-example-container" id="flowchartworkspace"></div>
+                </div>
+
+                <div class="draggable_operators">
+                    <div class="draggable_operators_label">
+                        Operators (drag and drop them in the flowchart):
+                    </div>
+                    <div class="draggable_operators_divs">
+                        <div class="draggable_operator ui-draggable ui-draggable-handle" data-nb-inputs="3"
+                             data-nb-outputs="0">3 input
+                        </div>
+                        <div class="draggable_operator ui-draggable ui-draggable-handle" data-nb-inputs="0"
+                             data-nb-outputs="1">1 output
+                        </div>
+                        <div class="draggable_operator ui-draggable ui-draggable-handle" data-nb-inputs="1"
+                             data-nb-outputs="1">1 input &amp; 1 output
+                        </div>
+                        <div class="draggable_operator ui-draggable ui-draggable-handle" data-nb-inputs="1"
+                             data-nb-outputs="2">1 in &amp; 2 out
+                        </div>
+                        <div class="draggable_operator ui-draggable ui-draggable-handle" data-nb-inputs="2"
+                             data-nb-outputs="1">2 in &amp; 1 out
+                        </div>
+                        <div class="draggable_operator ui-draggable ui-draggable-handle" data-nb-inputs="2"
+                             data-nb-outputs="2">2 in &amp; 2 out
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary create_operator">Create operator</button>
+                <button class="btn btn-danger delete_selected_button">Delete selected operator / link</button>
+                <button class="btn btn-primary get_data" id="get_data">Get data</button>
+                <button class="btn btn-primary set_data" id="set_data">Set data</button>
+                <button class="btn btn-primary" id="save" onclick="Save()">Save</button>
+                <button class="btn btn-primary" id="save_local">Save to local storage</button>
+                <button class="btn btn-primary" id="load_local">Load from local storage</button>
+                <button class="btn btn-info" onclick="evaluateCode()">Validate flow</button>
+                <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#LoginForm"
+                   class="btn btn-primary me-1"> Click Here</a>
+
+                <div id="link_properties" style="display: block;">
+                    <label for="link_color">Link's color:&nbsp;</label><input id="link_color" type="color">
+                </div>
+
+                <div>
+                    <textarea id="flowchart_data" th:text="${syncFlow.flowData}"></textarea>
+                </div>
+
+            </div>
+        </div><!--end container-->
+
+        @@include("../partials/footer.html")
+    </main>
+    <!--End page-content" -->
+</div>
+
+
+<!-- page-wrapper -->
+
+@@include("../partials/offcanvas-right.html")
+
+<div class="modal fade" id="LoginForm" tabindex="-1" aria-labelledby="LoginForm-title" aria-hidden="true"
+     style="display: none;">
+    <!--    <div class="modal-dialog modal-dialog-centered">-->
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content rounded shadow border-0">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="LoginForm-title">Sửa toán tử</h5>
+                <button type="button" class="btn btn-icon btn-close" data-bs-dismiss="modal" id="close-modal"><i
+                        class="uil uil-times fs-4 text-dark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="p-3 rounded box-shadow">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Loại toán tử <span class="text-danger">*</span></label>
+                                <select id="typeOperator" class="form-select form-control"
+                                        aria-label="Default select example">
+                                    <option value="0" selected>Mở để chọn loại</option>
+                                    <option th:each="tp : ${lstType}" th:value="${tp.id}" th:text="${tp.name}"></option>
+                                </select>
+                            </div>
+                        </div><!--end col-->
+
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Nguồn toán tử <span class="text-danger">*</span></label>
+                                <select id="sourceOperator" class="form-select form-control"
+                                        aria-label="Default select example">
+                                    <option value="0" selected>Mở để chọn nguồn</option>
+                                    <option th:each="sr : ${lstSource}" th:value="${sr.id}" th:text="${sr.name}"></option>
+                                </select>
+                            </div>
+                        </div><!--end col-->
+
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nội dung</label>
+                        <div class="form-icon position-relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" class="feather feather-message-circle fea icon-sm icons">
+                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                            </svg>
+                            <textarea name="logicContent" id="logicContent" rows="4" class="form-control ps-5"
+                                      placeholder="Nhập mã Javascript :" style="height: 120px;"></textarea>
+                        </div>
+                    </div>
+                    <div id="fieldIn">
+                    </div>
+                    <div id="fieldOut">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" onclick="addFieldInOut(null, null, 1)">Thêm trường in
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="addFieldInOut(null, null, 2)">Thêm trường out
+                    </button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="saveChart()">Lưu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- javascript -->
+<!--@@include("../partials/vendor-scripts.html")-->
+<div id="alert-information" th:attr="data-id=${session.toast}" hidden>Alert Information</div>
+<div id="menus" th:attr="data-id=${session.menuJson}" hidden>Menus</div>
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="/assets/js/jquery.mousewheel.min.js"></script>
+<script src="/assets/js/jquery.panzoom.min.js"></script>
+<script src="/assets/js/jquery.cookie.min.js"></script>
+<script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/libs/feather-icons/feather.min.js"></script>
+<script src="/assets/js/toastr/toastr.js"></script>
+<script src="/assets/js/interact.js"></script>
+<script src="/assets/libs/simplebar/simplebar.min.js"></script>
+<!-- Main Js -->
+<script src="/assets/js/plugins.init.js"></script>
+<script src="/assets/js/app.js"></script>
+<script src="/assets/js/flowchart/jquery.flowchart.js"></script>
+<script src="/assets/js/acorn_interpreter.js"></script>
+
+<script type="text/javascript">
+
+    function evaluateCode() {
+
+        try {
+            var myCode = 'alert(x.toUpperCase())';
+            var initFunc = function (interpreter, globalObject) {
+                interpreter.setProperty(globalObject, 'x', String(location));
+
+                var wrapper = function alert(text) {
+                    return window.alert(text);
+                };
+                interpreter.setProperty(globalObject, 'alert',
+                    interpreter.createNativeFunction(wrapper));
+            };
+            var myInterpreter = new Interpreter(myCode, initFunc);
+            myInterpreter.run();
+            alert('Result: ' + result);
+        } catch (error) {
+            // Handle errors
+            console.error('Error:', error);
+            alert('Error: ' + error);
+        }
+    }
+
+    function saveChart() {
+        const $flowchart = $('#flowchartworkspace');
+        var typeOperator = $('#typeOperator');
+        var logicContent = $('#logicContent');
+        const selectedOperatorId = $flowchart.flowchart('getSelectedOperatorId');
+        if (selectedOperatorId != null) {
+            $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#sourceOperator option:selected').text());
+
+            const dataOperator = $flowchart.flowchart('getOperatorData', selectedOperatorId);
+
+            var inputs = $('input[id^="field-name-input"]');
+            var typeInputs = $('select[id^="field-type-input"]');
+            var outputs = $('input[id^="field-name-output"]');
+            var typeOutputs = $('select[id^="field-type-output"]');
+            var dataInputs = {};
+            var dataOutputs = {};
+            inputs.each(function (index, element) {
+                dataInputs[$(element).attr("idField")] = {
+                    label: $(element).val(),
+                    type: $(typeInputs[index]).val()
+                }
+            });
+            outputs.each(function (index, element) {
+                dataOutputs[$(element).attr("idField")] = {
+                    label: $(element).val(),
+                    type: $(typeOutputs[index]).val()
+                }
+            });
+
+            dataOperator.properties.inputs = dataInputs;
+            dataOperator.properties.outputs = dataOutputs;
+            dataOperator.properties.body = logicContent.val();
+            dataOperator.typeOperator = $('#typeOperator').val();
+            dataOperator.nameOperator = $('#typeOperator option:selected').text()
+            dataOperator.sourceOperator= $('#sourceOperator').val();;
+            $flowchart.flowchart('setOperatorData', selectedOperatorId, dataOperator);
+        }
+    }
+
+    function addFieldInOut(item, itemId, typeItem) {
+        var nameField = '';
+        var typeField = -1;
+        var nameLabel = typeItem == 1 ? 'input' : 'output';
+        var count = typeItem == 1 ? $('#fieldIn').children('div').length : $('#fieldOut').children('div').length;
+        var idFieldName = 'field-name-' + nameLabel + '_' + count;
+        var idFieldType = 'field-type-' + nameLabel + '_' + count;
+
+        if (item != null) {
+            nameField = item.label;
+            typeField = item.type;
+        }
+        if(itemId == null) {
+            itemId = nameLabel + '_' + count
+        }
+        var newField = '                        <div class="row d-flex align-items-center justify-content-lg-between">\n' +
+            '                            <div class="col-lg-4">\n' +
+            '                                <div class="mb-3">\n' +
+            '                                    <label class="form-label">Tên trường dữ liệu ' + nameLabel + '</label>\n' +
+            '                                    <div class="form-icon position-relative">\n' +
+            '                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book fea icon-sm icons"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>\n' +
+            '                                        <input name="' + idFieldName + '" id="' + idFieldName + '" idField="' + itemId + '" class="form-control ps-5" placeholder="Nhập tên trường :" value="' + nameField + '">\n' +
+            '                                    </div>\n' +
+            '                                </div>\n' +
+            '                            </div>\n' +
+            '                            <div class="col-lg-4">\n' +
+            '                                <div class="mb-3">\n' +
+            '                                    <label class="form-label">Kiểu dữ liệu</label>\n' +
+            '                                    <select name="' + idFieldType + '" id="' + idFieldType + '" class="form-select form-control" aria-label="Default select example">\n' +
+            '                                        <option value="0">String</option>\n' +
+            '                                        <option value="1">Number</option>\n' +
+            '                                        <option value="2">Date</option>\n' +
+            '                                        <option value="3">Array</option>\n' +
+            '                                    </select>\n' +
+            '                                </div>\n' +
+            '                            </div>\n' +
+            '                            <div class="col-lg-2">\n' +
+            '                                <div class="mb-3" style="margin-top:30px">\n' +
+            '                                    <label class="form-label"></label>\n' +
+            '                                   <a href="javascript:void(0)" class="text-danger" onclick="removeField(this)"><i class="uil uil-times"></i></a>' +
+            '                                </div>\n' +
+            '                            </div>\n' +
+            '                        </div> ';
+        if (typeItem == 1) {
+            $('#fieldIn').append(newField);
+        } else {
+            $('#fieldOut').append(newField);
+        }
+        $('#' + idFieldType).val(typeField);
+    }
+
+    function Save() {
+        const $flowchart = $('#flowchartworkspace');
+        var data = $flowchart.flowchart('getData');
+        var dataFlow = JSON.stringify(data, null, 2);
+        interact('/flow/addNew', {
+            method: 'POST',
+            body: dataFlow
+        });
+    }
+
+    function removeField(element) {
+        $(element).closest('.row').remove();
+    }
+
+    function getDefaultFlowchartData(flowChar) {
+        var topPoint = (flowChar.height() / 2) - 30;
+        var leftPoint = (flowChar.width() / 2) - 100;
+        return {
+            operators: {
+                operator1: {
+                    top: topPoint,
+                    left: leftPoint,
+                    typeOperator: 0,
+                    nameOperator: '',
+                    sourceOperator:0,
+                    properties: {
+                        title: 'Operator 1',
+                        inputs: {},
+                        outputs: {
+                            outs: {
+                                label: 'Output 1',
+                                type: '1'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    $(document).ready(function () {
+        const $flowchart = $('#flowchartworkspace');
+        const $container = $flowchart.parent();
+
+        const cx = $flowchart.width() / 2;
+        const cy = $flowchart.height() / 2;
+
+
+        // Panzoom initialization...
+        $flowchart.panzoom();
+
+        // Centering panzoom
+        $flowchart.panzoom('pan', -cx + $container.width() / 2, -cy + $container.height() / 2);
+
+        // Panzoom zoom handling..
+        var possibleZooms = [0.5, 0.75, 1, 2, 3];
+        var currentZoom = 2;
+        $container.on('mousewheel.focal', function (e) {
+            e.preventDefault();
+            var delta = (e.delta || e.originalEvent.wheelDelta) || e.originalEvent.detail;
+            var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
+            currentZoom = Math.max(0, Math.min(possibleZooms.length - 1, (currentZoom + (zoomOut * 2 - 1))));
+            $flowchart.flowchart('setPositionRatio', possibleZooms[currentZoom]);
+            $flowchart.panzoom('zoom', possibleZooms[currentZoom], {
+                animate: false,
+                focal: e
+            });
+        });
+
+
+        $flowchart.flowchart({
+            data: getDefaultFlowchartData($flowchart),
+            defaultSelectedLinkColor: '#000055',
+            grid: 10,
+            multipleLinksOnInput: true,
+            multipleLinksOnOutput: true,
+            canUserEditLinks: true,
+            canUserMoveOperators: true
+        });
+
+        function getOperatorData($element) {
+            var nbInputs = parseInt($element.data('nb-inputs'), 10);
+            var nbOutputs = parseInt($element.data('nb-outputs'), 10);
+            var data = {
+                properties: {
+                    title: $element.text(),
+                    inputs: {},
+                    outputs: {}
+                }
+            };
+
+            var i = 0;
+            for (i = 0; i < nbInputs; i++) {
+                data.properties.inputs['input_' + i] = {
+                    label: 'Input ' + (i + 1),
+                    type: '1'
+                };
+            }
+            for (i = 0; i < nbOutputs; i++) {
+                data.properties.outputs['output_' + i] = {
+                    label: 'Output ' + (i + 1),
+                    type: '1'
+                };
+            }
+
+            return data;
+        }
+
+        const $operatorProperties = $('#operator_properties');
+        $operatorProperties.hide();
+        const $linkProperties = $('#link_properties');
+        $linkProperties.hide();
+        const $linkColor = $('#link_color');
+
+        $flowchart.flowchart({
+            onOperatorSelect: function (operatorId) {
+                // $operatorProperties.show();
+                $('#fieldIn').empty();
+                $('#fieldOut').empty();
+                const dataOperator = $flowchart.flowchart('getOperatorData', operatorId);
+                var inputs = dataOperator.properties.inputs;
+                var outputs = dataOperator.properties.outputs;
+                $('#logicContent').val(dataOperator.properties.body);
+                for (var ip in inputs) {
+                    var itemInput = inputs[ip];
+                    addFieldInOut(itemInput, ip, 1);
+                }
+                for (var op in outputs) {
+                    var itemOutput = outputs[op];
+                    addFieldInOut(itemOutput, op, 2);
+                }
+                $('#typeOperator').val(dataOperator.typeOperator);
+
+                var valueSelected = $('#typeOperator option:selected').text()
+                var textSelected = $('#typeOperator option:selected').text()
+
+                $('#sourceOperator').empty().append('<option value="0" selected>Mở để chọn nguồn</option>');
+                if (valueSelected != '' && valueSelected != '0' && textSelected) {
+                    $.ajax({
+                        url: '/category/get-category-by-type?type=' + textSelected,
+                        type: 'GET',
+                        success: function(data) {
+                            var optionSourceOperator = $('#sourceOperator');
+                            $.each(data, function(index, value) {
+                                optionSourceOperator.append($('<option>', {
+                                    value: value.id,
+                                    text: value.name
+                                }));
+                            });
+                            $('#sourceOperator').val(dataOperator.sourceOperator);
+                        },
+                        error: function(xhr, status, error) {
+                            // console.error('Failed to fetch category', error);
+                        }
+                    });
+                }
+
+                var myModal = new bootstrap.Modal(document.getElementById('LoginForm'), options)
+                myModal.show();
+                return true;
+            },
+            onOperatorUnselect: function () {
+                $operatorProperties.hide();
+                return true;
+            },
+            onLinkSelect: function (linkId) {
+                $linkProperties.show();
+                $linkColor.val($flowchart.flowchart('getLinkMainColor', linkId));
+                return true;
+            },
+            onLinkUnselect: function () {
+                $linkProperties.hide();
+                return true;
+            }
+        });
+
+        $linkColor.change(function () {
+            const selectedLinkId = $flowchart.flowchart('getSelectedLinkId');
+            if (selectedLinkId != null) {
+                $flowchart.flowchart('setLinkMainColor', selectedLinkId, $linkColor.val());
+            }
+        });
+
+        $flowchart.parent().siblings('.delete_selected_button').click(function () {
+            $flowchart.flowchart('deleteSelected');
+        });
+
+        let operatorI = 0;
+        $flowchart.parent().siblings('.create_operator').click(function () {
+            const operatorId = 'created_operator_' + operatorI;
+            const operatorData = {
+                top: ($flowchart.height() / 2) - 30,
+                left: ($flowchart.width() / 2) - 100 + (operatorI * 10),
+                typeOperator: 0,
+                nameOperator: '',
+                sourceOperator: 0,
+                properties: {
+                    title: 'Operator ' + (operatorI + 3),
+                    inputs: {
+                        input_0: {
+                            label: 'Input 1',
+                            type: '1'
+                        }
+                    },
+                    outputs: {
+                        output_0: {
+                            label: 'Output 1',
+                            type: '1'
+                        }
+                    }
+                }
+            };
+
+            operatorI++;
+
+            $flowchart.flowchart('createOperator', operatorId, operatorData);
+
+        });
+
+        const $draggableOperators = $('.draggable_operator');
+        $draggableOperators.draggable({
+            cursor: "move",
+            opacity: 0.7,
+            // helper: 'clone',
+            appendTo: 'body',
+            zIndex: 1000,
+
+            helper: function (e) {
+                const $this = $(this);
+                const data = getOperatorData($this);
+                return $flowchart.flowchart('getOperatorElement', data);
+            },
+            stop: function (e, ui) {
+                const $this = $(this);
+                const elOffset = ui.offset;
+                const containerOffset = $container.offset();
+                if (elOffset.left > containerOffset.left &&
+                    elOffset.top > containerOffset.top &&
+                    elOffset.left < containerOffset.left + $container.width() &&
+                    elOffset.top < containerOffset.top + $container.height()) {
+
+                    const flowchartOffset = $flowchart.offset();
+
+                    let relativeLeft = elOffset.left - flowchartOffset.left;
+                    let relativeTop = elOffset.top - flowchartOffset.top;
+
+                    const positionRatio = $flowchart.flowchart('getPositionRatio');
+                    relativeLeft /= positionRatio;
+                    relativeTop /= positionRatio;
+
+                    const data = getOperatorData($this);
+                    data.left = relativeLeft;
+                    data.top = relativeTop;
+
+                    $flowchart.flowchart('addOperator', data);
+                }
+            }
+        });
+
+        function Flow2Text() {
+            var data = $flowchart.flowchart('getData');
+            $('#flowchart_data').val(JSON.stringify(data, null, 2));
+        }
+
+        $('#get_data').click(Flow2Text);
+
+        function Text2Flow() {
+            var data = JSON.parse($('#flowchart_data').val());
+            $flowchart.flowchart('setData', data);
+        }
+
+        $('#set_data').click(Text2Flow);
+
+        function LoadFromLocalStorage() {
+            if (typeof localStorage !== 'object') {
+                alert('local storage not available');
+                return;
+            }
+            var s = localStorage.getItem("stgLocalFlowChart");
+            if (s != null) {
+                $('#flowchart_data').val(s);
+                Text2Flow();
+            } else {
+                alert('local storage empty');
+            }
+        }
+
+        $('#load_local').click(LoadFromLocalStorage);
+        $('#typeOperator').change(function () {
+            var valueSelected = $('#typeOperator option:selected').text()
+            var textSelected = $('#typeOperator option:selected').text()
+
+            $('#sourceOperator').empty().append('<option value="0" selected>Mở để chọn nguồn</option>');
+            if (valueSelected != '' && valueSelected != '0' && textSelected) {
+                $.ajax({
+                    url: '/category/get-category-by-type?type=' + textSelected,
+                    type: 'GET',
+                    success: function(data) {
+                        var optionSourceOperator = $('#sourceOperator');
+                        $.each(data, function(index, value) {
+                            optionSourceOperator.append($('<option>', {
+                                value: value.id,
+                                text: value.name
+                            }));
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        // console.error('Failed to fetch category', error);
+                    }
+                });
+            }
+        });
+        Text2Flow();
+    });
+
+    if (false) console.log('remove lint unused warning');
+</script>
+</body>
+
+</html>
